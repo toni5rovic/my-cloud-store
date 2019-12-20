@@ -13,8 +13,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MyCloudStore.Service.DataLayer;
 using MyCloudStore.Service.DataLayer.Models;
-using MyCloudStore.SharedModels;
-using MyCloudStore.SharedModels.Results;
+using MyCloudStore.Shared.Requests;
+using MyCloudStore.Shared.Responses;
 
 namespace MyCloudStore.Service.Controllers
 {
