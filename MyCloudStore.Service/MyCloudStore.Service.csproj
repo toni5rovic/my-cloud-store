@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MyCloudStore.SharedModels\MyCloudStore.SharedModels.csproj" />
+    <ProjectReference Include="..\MyCloudStore.Shared\MyCloudStore.Shared.csproj" />
   </ItemGroup>
 
 </Project>

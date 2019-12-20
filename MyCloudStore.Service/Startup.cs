@@ -31,6 +31,18 @@ namespace MyCloudStore.Service
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddCors(corsOptions =>
+			{
+				corsOptions.AddDefaultPolicy(policy =>
+				{
+					policy
+						.AllowAnyOrigin()
+						.AllowAnyHeader()
+						.AllowAnyMethod();
+						//.AllowCredentials();
+				});
+			});
+
 			var connectionString = Configuration.GetSection("Database").GetValue<string>("ConnectionString");
 
 			services.AddMvc()
@@ -65,6 +77,8 @@ namespace MyCloudStore.Service
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
+			app.UseCors();
+
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();

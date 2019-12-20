@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCloudStore.Crypto", "MyCl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCloudStore.Client", "MyCloudStore.Client\MyCloudStore.Client.csproj", "{FEE41340-1BAB-4C76-96E3-7F70480EF852}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCloudStore.SharedModels", "MyCloudStore.SharedModels\MyCloudStore.SharedModels.csproj", "{5711D8A1-4A45-4014-9E63-BCC7DA003DFA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCloudStore.Shared", "MyCloudStore.Shared\MyCloudStore.Shared.csproj", "{33A1FEFF-2D01-4597-900D-4D413FBE323A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{FEE41340-1BAB-4C76-96E3-7F70480EF852}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEE41340-1BAB-4C76-96E3-7F70480EF852}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEE41340-1BAB-4C76-96E3-7F70480EF852}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5711D8A1-4A45-4014-9E63-BCC7DA003DFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5711D8A1-4A45-4014-9E63-BCC7DA003DFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5711D8A1-4A45-4014-9E63-BCC7DA003DFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5711D8A1-4A45-4014-9E63-BCC7DA003DFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33A1FEFF-2D01-4597-900D-4D413FBE323A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33A1FEFF-2D01-4597-900D-4D413FBE323A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33A1FEFF-2D01-4597-900D-4D413FBE323A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33A1FEFF-2D01-4597-900D-4D413FBE323A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
