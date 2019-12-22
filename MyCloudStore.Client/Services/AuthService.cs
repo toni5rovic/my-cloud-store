@@ -25,7 +25,6 @@ namespace MyCloudStore.Client.Services
 							ILocalStorageService localStorage)
 		{
 			this.httpClient = httpClient;
-			this.httpClient.BaseAddress = new Uri("https://localhost:44387/");
 			this.authenticationStateProvider = authenticationStateProvider;
 			this.localStorage = localStorage;
 		}
@@ -43,7 +42,7 @@ namespace MyCloudStore.Client.Services
 
 			await this.localStorage.SetItemAsync("authToken", loginResult.Token);
 			((ApiAuthenticationStateProvider)authenticationStateProvider).MarkUserAsAuthenticated(loginModel.Email);
-			this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", loginResult.Token);
+			this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginResult.Token);
 
 			return loginResult;
 		}
