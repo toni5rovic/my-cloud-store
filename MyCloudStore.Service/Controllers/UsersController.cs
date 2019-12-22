@@ -99,5 +99,12 @@ namespace MyCloudStore.Service.Controllers
 				return BadRequest();
 			}
 		}
+
+		[HttpGet]
+		[Route("opsa")]
+		public IActionResult Opsa()
+		{
+			return new JsonResult(new { opsa = "brt" });
+		}
 	}
 }
