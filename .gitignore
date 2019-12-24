@@ -5,6 +5,7 @@
 
 # Client files folder
 ClientFiles/
+MyCloudStore.TestCryptoAlgorithms/
 
 # User-specific files
 *.rsuser
