@@ -1,101 +1,108 @@
-﻿@using  System.IO;
-@using  MyCloudStore.Shared.Requests;
-@inject IFileReaderService  fileReaderService;
-@inject IUploadService  uploadService;
-@page  "/myFiles"
+﻿@page  "/myFiles"
+@using  MyCloudStore.Shared.Responses;
+@using MyCloudStore.CryptoLibrary.Hash;
+@inject HttpClient  httpClient;
+@inject IFileService fileService;
+@inject IModalService  modalService;
+@inject IJSRuntime js;
 
 <h1>My Files</h1>
 
-<input type="file" @ref=inputTypeFileElement />
-<button @onclick=ReadFile class="btn btn-primary">Read file</button>
-<button @onclick=ClearFile class="btn btn-primary">Clear</button>
+@if (!String.IsNullOrEmpty(ErrorMessage))
+{
+	<div class="alert alert-danger" role="alert">
+		<strong>@ErrorMessage</strong>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+}
 
-<br />
-<br />
-<progress max="@max" value="@value" />
-<br />
-<textarea style="max-width: 100%;" cols="50" rows="20">@Output</textarea>
-@code {
+@if (files == null)
+{
+	<p><em>Loading file list..</em></p>
+}
+else
+{
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Uploaded on</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var file in files)
+			{
+				<tr>
+					<td>@file.FileName</td>
+					<td>@file.Created.ToShortDateString()</td>
+					<td>
+						<button @onclick="@(() => ShowHashValueModal(file.HashValue))" class="btn btn-primary">
+							<span class="oi oi-eye" aria-hidden="true"></span>
+							See hash
+						</button>
+					</td>
+					<td>
+						<button @onclick="@(() => Download(file.Id))" class="btn btn-primary">
+							<span class="oi oi-cloud-download" aria-hidden="true"></span>
+							Download
+						</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
 
-	[Parameter]
-	public int BufferSize { get; set; } = 20480;
-	public long max;
-	public long value;
-	public string Output { get; set; }
-	ElementReference inputTypeFileElement;
+@functions {
+	List<FileResult> files;
+	string ErrorMessage { get; set; }
 
-	public async Task ClearFile()
+	protected void ShowHashValueModal(string hashValue)
 	{
-		await fileReaderService.CreateReference(inputTypeFileElement).ClearValue();
+		var parameters = new ModalParameters();
+		parameters.Add("HashValue", hashValue);
+
+		modalService.Show<TigerHashValue>("Tiger Hash Value", parameters);
 	}
 
-	public async Task ReadFile()
+	protected async Task Download(Guid fileId)
 	{
-		max = 0;
-		value = 0;
-		Output = string.Empty;
-		this.StateHasChanged();
-		var nl = Environment.NewLine;
-		var files = (await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync()).ToList();
-		foreach (var file in files)
+		var text = "Hello, world!";
+		var bytes = System.Text.Encoding.UTF8.GetBytes(text);
+
+		FileResult file = await fileService.GetFileAsync(fileId);
+
+		// TODO
+		// get algorithm and key
+		// decrypt
+		// then:
+
+		// check if the hash value matches
+		TigerHash tigerHasher = new TigerHash();
+		byte[] receivedFileHash = tigerHasher.Hash(file.Content, file.Content.Length);
+		string receivedFileHashString = Convert.ToBase64String(receivedFileHash);
+
+		if (receivedFileHashString != file.HashValue)
 		{
-			max += (await file.ReadFileInfoAsync()).Size;
+			ErrorMessage = "Hash values are not matching. Error occured during decryption.";
+			StateHasChanged();
+			return;
 		}
-		foreach (var file in files)
-		{
-			var fileInfo = await file.ReadFileInfoAsync();
-			Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Name)}: {fileInfo.Name}{nl}";
-			Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Size)}: {fileInfo.Size}{nl}";
-			Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Type)}: {fileInfo.Type}{nl}";
-			Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.LastModifiedDate)}: {fileInfo.LastModifiedDate?.ToString() ?? "(N/A)"}{nl}";
-			Output += $"Reading file...";
-			this.StateHasChanged();
-			Console.WriteLine(Output);
-			using (var fs = await file.OpenReadAsync())
-			{
-				var buffer = new byte[BufferSize];
-				int count;
-				var lastAnnounce = 0m;
-				while ((count = await fs.ReadAsync(buffer, 0, buffer.Length)) != 0)
-				{
-					value += count;
-					var progress = ((decimal)fs.Position * 100) / fs.Length;
-					if (progress > (lastAnnounce + 10))
-					{
-						Output += $"Read {count} bytes ({progress:00}%). {fs.Position} / {fs.Length}{nl}";
-						this.StateHasChanged();
-						lastAnnounce = progress;
-					}
-				}
-				Output += $"Done reading file {fileInfo.Name} - {fs.Length} bytes.";
-			}
 
-			using (var fs = await file.OpenReadAsync())
-			{
-				//var buffer = new byte[fs.Length];
-				//await fs.ReadAsync(buffer, 0, (int)fs.Length);
-
-				await uploadService.UploadFileAsync(fs, fileInfo.Name);
-			}
-			this.StateHasChanged();
-
-			//var multiform = new MultipartFormDataContent();
-			//multiform.Add(new StreamContent(await file.OpenReadAsync(), fileInfo.Size), "files", fileInfo.Name);
-		}
+		await FileUtil.SaveAs(js, file.FileName, file.Content);
 	}
 
-	public async Task UploadAsync(Stream stream)
+	protected override async Task OnInitializedAsync()
 	{
-		using (HttpContent fileStreamContent = new StreamContent(stream))
-		{
-			//Add any headers you require here
-			fileStreamContent.Headers.Add("x-ms-blob-type", "BlockBlob");
-			//var response = await _httpClient.PutAsync("your upload endpoint url", fileStreamContent);
+		await Load();
+	}
 
-			using (HttpClient client = new HttpClient())
-			{
-				client.BaseAddress = new Uri("https://localhost:");
-			}
-		}
+	protected async Task Load()
+	{
+		files = await fileService.GetFilesAsync();
 	}
 }

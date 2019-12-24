@@ -5,11 +5,13 @@ VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCloudStore.Service", "MyCloudStore.Service\MyCloudStore.Service.csproj", "{EBDC9590-0A03-4D14-B0D6-17FCEC13B8DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCloudStore.Crypto", "MyCloudStore.Crypto\MyCloudStore.Crypto.csproj", "{079A5A06-69A7-4029-91B0-B284DE84F4CC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCloudStore.Client", "MyCloudStore.Client\MyCloudStore.Client.csproj", "{FEE41340-1BAB-4C76-96E3-7F70480EF852}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCloudStore.Shared", "MyCloudStore.Shared\MyCloudStore.Shared.csproj", "{33A1FEFF-2D01-4597-900D-4D413FBE323A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCloudStore.Shared", "MyCloudStore.Shared\MyCloudStore.Shared.csproj", "{33A1FEFF-2D01-4597-900D-4D413FBE323A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCloudStore.TestCryptoAlgorithms", "MyCloudStore.TestCryptoAlgorithms\MyCloudStore.TestCryptoAlgorithms.csproj", "{BF696D13-F896-4B8D-A585-379D597FFDDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCloudStore.CryptoLibrary", "MyCloudStore.CryptoLibrary\MyCloudStore.CryptoLibrary.csproj", "{51A31ED4-C6BA-47FB-8027-F0A7A3D25BA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +23,6 @@ Global
 		{EBDC9590-0A03-4D14-B0D6-17FCEC13B8DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBDC9590-0A03-4D14-B0D6-17FCEC13B8DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBDC9590-0A03-4D14-B0D6-17FCEC13B8DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{079A5A06-69A7-4029-91B0-B284DE84F4CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{079A5A06-69A7-4029-91B0-B284DE84F4CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{079A5A06-69A7-4029-91B0-B284DE84F4CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{079A5A06-69A7-4029-91B0-B284DE84F4CC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FEE41340-1BAB-4C76-96E3-7F70480EF852}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FEE41340-1BAB-4C76-96E3-7F70480EF852}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEE41340-1BAB-4C76-96E3-7F70480EF852}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +31,14 @@ Global
 		{33A1FEFF-2D01-4597-900D-4D413FBE323A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33A1FEFF-2D01-4597-900D-4D413FBE323A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33A1FEFF-2D01-4597-900D-4D413FBE323A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF696D13-F896-4B8D-A585-379D597FFDDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF696D13-F896-4B8D-A585-379D597FFDDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF696D13-F896-4B8D-A585-379D597FFDDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF696D13-F896-4B8D-A585-379D597FFDDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51A31ED4-C6BA-47FB-8027-F0A7A3D25BA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51A31ED4-C6BA-47FB-8027-F0A7A3D25BA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51A31ED4-C6BA-47FB-8027-F0A7A3D25BA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51A31ED4-C6BA-47FB-8027-F0A7A3D25BA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
