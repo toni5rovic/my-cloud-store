@@ -1,5 +1,6 @@
 using Blazor.FileReader;
 using Blazored.LocalStorage;
+using Blazored.Modal;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,7 @@ namespace MyCloudStore.Client
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddBlazoredLocalStorage();
+            services.AddBlazoredModal();
             services.AddAuthorizationCore();
             var client = new HttpClient();
             client.BaseAddress = new System.Uri("https://localhost:44387/");
@@ -20,7 +22,7 @@ namespace MyCloudStore.Client
 
             services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IUploadService, UploadService>();
+            services.AddScoped<IFileService, FileService>();
             services.AddFileReaderService(options =>
             {
                 options.UseWasmSharedBuffer = true;
