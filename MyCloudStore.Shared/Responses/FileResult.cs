@@ -6,8 +6,10 @@ namespace MyCloudStore.Shared.Responses
 {
 	public class FileResult
 	{
+		public Guid Id { get; set; }
 		public string FileName { get; set; }
 		public byte[] Content { get; set; }
-		public byte[] HashValue { get; set; }
+		public string HashValue { get; set; }
+		public DateTime Created { get; set; }
 	}
 }
