@@ -31,11 +31,40 @@ namespace MyCloudStore.Service.Controllers
 			this.configuration = configuration;
 		}
 
+		// TODO: return only files from current user
 		// GET: api/Files
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<File>>> GetFiles()
+		public async Task<ActionResult<IList<FileResult>>> GetFiles()
 		{
-			return await this.context.Files.ToListAsync();
+			var claims = HttpContext.User.Claims;
+			var email = claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value;
+			var user = await context.AppUsers.FirstOrDefaultAsync(u => u.Email == email);
+
+			if (user == null)
+			{
+				return BadRequest();
+			}
+
+			// Get all files from the DB 
+			var files = await context.Files
+				.Where(f => f.UserId == user.Id)
+				.ToListAsync();
+
+			List<FileResult> toReturn = new List<FileResult>();
+			foreach (var dbFile in files)
+			{
+				FileResult fileResult = new FileResult
+				{
+					Id = dbFile.Id,
+					FileName = dbFile.FileName,
+					HashValue = Convert.ToBase64String(dbFile.HashValue),
+					Created = dbFile.Created
+				};
+
+				toReturn.Add(fileResult);
+			}
+
+			return toReturn;
 		}
 
 		// GET: api/Files/5
@@ -84,7 +113,7 @@ namespace MyCloudStore.Service.Controllers
 			FileResult fileResult = new FileResult
 			{
 				FileName = file.FileName,
-				HashValue = file.HashValue,
+				HashValue = Convert.ToBase64String(file.HashValue),
 				Content = fileBuffer
 			};
 
