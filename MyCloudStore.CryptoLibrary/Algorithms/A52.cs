@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Text;
 
-namespace MyCloudStore.Crypto.Algorithms
+namespace MyCloudStore.CryptoLibrary.Algorithms
 {
 	public enum Register
 	{
@@ -107,19 +107,19 @@ namespace MyCloudStore.Crypto.Algorithms
 			switch (registerToClock)
 			{
 				case Register.R1:
-					R1 = R1.LeftShift(1);
+					R1 = Helper.LeftShift(R1);
 					R1.Set(0, feedback);
 					break;
 				case Register.R2:
-					R2 = R2.LeftShift(1);
+					R2 = Helper.LeftShift(R2);
 					R2.Set(0, feedback);
 					break;
 				case Register.R3:
-					R3 = R3.LeftShift(1);
+					R3 = Helper.LeftShift(R3);
 					R3.Set(0, feedback);
 					break;
 				case Register.R4:
-					R4 = R4.LeftShift(1);
+					R4 = Helper.LeftShift(R4);
 					R4.Set(0, feedback);
 					break;
 			}

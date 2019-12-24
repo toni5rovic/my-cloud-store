@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MyCloudStore.Crypto.Hash
+namespace MyCloudStore.CryptoLibrary
 {
 	public static class Helper
 	{
@@ -17,7 +18,7 @@ namespace MyCloudStore.Crypto.Hash
 		public static byte[] UlongToBytes(ulong number)
 		{
 			byte[] result = new byte[8];
-			for (int i=0;i<8;i++)
+			for (int i = 0; i < 8; i++)
 			{
 				result[i] = (byte)(number & 0x00000000000000FF);
 				number = number >> 8;
@@ -68,6 +69,23 @@ namespace MyCloudStore.Crypto.Hash
 			foreach (byte b in array)
 				hex.AppendFormat("{0:x2}", b);
 			return hex.ToString();
+		}
+
+		public static BitArray LeftShift(BitArray bitArray)
+		{
+			//bool[] new_arr = new bool[(bitArray.Count)];
+			//for (int i = 0; i < bitArray.Count - 1; i++)
+			//	new_arr[i] = bitArray[i + 1];
+
+			//return new BitArray(new_arr);
+
+			for (int i=bitArray.Length-1;i>0;i--)
+			{
+				bitArray[i] = bitArray[i - 1];
+			}
+
+			bitArray[0] = false;
+			return bitArray;
 		}
 	}
 }

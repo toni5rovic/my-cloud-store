@@ -8,7 +8,7 @@
 //     License: Common Development and Distribution License (CDDL)
 // ############################################################################
 
-namespace MyCloudStore.Crypto.Hash
+namespace MyCloudStore.CryptoLibrary.Hash
 {
 	public static class SBox
 	{

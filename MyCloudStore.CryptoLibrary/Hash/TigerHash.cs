@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Security.Cryptography;
 
-namespace MyCloudStore.Crypto.Hash
+namespace MyCloudStore.CryptoLibrary.Hash
 {
 	public class TigerHash
 	{
@@ -41,7 +40,7 @@ namespace MyCloudStore.Crypto.Hash
 			AA = BB = CC = 0;
 			X = new ulong[8];
 
-			blocksHashed= 0;
+			blocksHashed = 0;
 		}
 
 		private void InitializeXs(byte[] messageBlock)

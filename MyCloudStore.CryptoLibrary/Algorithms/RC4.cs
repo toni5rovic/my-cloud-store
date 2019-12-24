@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MyCloudStore.Crypto.Algorithms
+namespace MyCloudStore.CryptoLibrary.Algorithms
 {
 	public class RC4 : ICryptoAlgorithm
 	{
