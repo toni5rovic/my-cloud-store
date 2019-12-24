@@ -11,6 +11,8 @@ namespace MyCloudStore.Service.DataLayer.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
+        public int MaxKBs { get; set; }
+
         public IList<File> Files { get; set; }
     }
 }

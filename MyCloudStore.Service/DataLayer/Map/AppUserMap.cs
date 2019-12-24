@@ -14,6 +14,7 @@ namespace MyCloudStore.Service.DataLayer.Map
         {
             builder.Property(user => user.FirstName);
             builder.Property(user => user.LastName);
+            builder.Property(user => user.MaxKBs);
             builder.HasMany<File>(user => user.Files)
                 .WithOne(file => file.User)
                 .HasForeignKey(file => file.UserId);
