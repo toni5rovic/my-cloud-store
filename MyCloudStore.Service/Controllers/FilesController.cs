@@ -138,7 +138,11 @@ namespace MyCloudStore.Service.Controllers
 			string userFolderPath = Path.Combine(clientFilesFolder, user.Id.ToString());
 			if (!Directory.Exists(userFolderPath))
 			{
-				return NotFound();
+				return new StorageSpace()
+				{
+					MaxKBs = user.MaxKBs,
+					CurrentKBs = 0
+				};
 			}
 
 			var files = user.Files.ToList();

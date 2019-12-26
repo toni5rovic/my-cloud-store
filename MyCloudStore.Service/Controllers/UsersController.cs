@@ -42,7 +42,7 @@ namespace MyCloudStore.Service.Controllers
 		[Route("register")]
 		public async Task<IActionResult> Register([FromBody]RegisterModel model)
 		{
-			var newUser = new AppUser { UserName = model.Email, Email = model.Email };
+			var newUser = new AppUser { UserName = model.Email, Email = model.Email, MaxKBs =  500};
 
 			var result = await this.userManager.CreateAsync(newUser, model.Password);
 
