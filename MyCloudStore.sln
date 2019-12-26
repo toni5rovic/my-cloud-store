@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCloudStore.Shared", "MyCl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCloudStore.TestCryptoAlgorithms", "MyCloudStore.TestCryptoAlgorithms\MyCloudStore.TestCryptoAlgorithms.csproj", "{BF696D13-F896-4B8D-A585-379D597FFDDE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCloudStore.CryptoLibrary", "MyCloudStore.CryptoLibrary\MyCloudStore.CryptoLibrary.csproj", "{51A31ED4-C6BA-47FB-8027-F0A7A3D25BA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCloudStore.CryptoLibrary", "MyCloudStore.CryptoLibrary\MyCloudStore.CryptoLibrary.csproj", "{51A31ED4-C6BA-47FB-8027-F0A7A3D25BA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

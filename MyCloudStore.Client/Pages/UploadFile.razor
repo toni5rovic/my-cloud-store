@@ -1,34 +1,52 @@
 ﻿@using  System.IO;
+@using  System.Text;
 @using  MyCloudStore.Shared.Requests;
 @inject IFileReaderService  fileReaderService;
 @inject IFileService  fileService;
 @page "/uploadFile"
 
-<h3>UploadFile</h3>
+<h3>Upload File</h3>
 
+<div class="container row">
+	<div class="col-6">
+		<select id="algorithm" class="form-control" @bind="Algorithm">
+			<option value="A52">A5/2</option>
+			<option value="RC4">RC4</option>
+		</select>
+		<br />
+		<div class="radio">
+			<label><input type="radio" name="keyInput" value="auto" checked onclick="document.getElementById('keyValue').disabled = true; document.getElementById('keyValue').value = '';" /> Auto-generate the key</label>
+		</div>
+		<div class="radio">
+			<label><input type="radio" name="keyInput" value="manually" onclick="document.getElementById('keyValue').disabled = false;" /> Choose your own key</label>
+		</div>
 
-<select id="algorithm" class="form-control">
-	<option value="A5/2">A5/2</option>
-	<option value="RC4">RC4</option>
-</select>
-<br />
-<input type="file" @ref=inputTypeFileElement />
-<button @onclick=ReadFile class="btn btn-primary">Read file</button>
-<button @onclick=ClearFile class="btn btn-primary">Clear</button>
-<br />
-<br />
-<progress max="@max" value="@value" />
-<br />
-<br />
-<textarea style="max-width: 100%;" cols="50" rows="20">@Output</textarea>
+		<div class="form-group mb-2">
+			<label>Enter the key: </label>
+			<input type="text" id="keyValue" class="form-control" name="keyValue" @bind=EnteredKey disabled />
+		</div>
+
+		<input type="file" @ref=inputTypeFileElement />
+		<div class="mb-2 mt-2">
+			<button @onclick=ReadFile class="btn btn-primary">Upload file</button>
+			<button @onclick=ClearFile class="btn btn-primary">Clear</button>
+		</div>
+		<progress max="@max" value="@value" />
+
+		@*<div class="mt-2">
+			<textarea style="max-width: 100%;" cols="50" rows="20">@Output</textarea>
+		</div>*@
+	</div>
+</div>
 @code {
 
 	[Parameter]
 	public int BufferSize { get; set; } = 20480;
 	public long max;
 	public long value;
+	public string EnteredKey { get; set; }
 	public string Output { get; set; }
-	public string Algorithm { get; set; }
+	public string Algorithm { get; set; } = "A52";
 	ElementReference inputTypeFileElement;
 
 	public async Task ClearFile()
@@ -77,17 +95,60 @@
 				Output += $"Done reading file {fileInfo.Name} - {fs.Length} bytes.";
 			}
 
+
+
 			using (var fs = await file.OpenReadAsync())
 			{
 				//var buffer = new byte[fs.Length];
 				//await fs.ReadAsync(buffer, 0, (int)fs.Length);
-
-				await fileService.UploadFileAsync(fs, fileInfo.Name);
+				var key = await HandleKey();
+				await fileService.UploadFileAsync(fs, fileInfo.Name, Algorithm, key);
 			}
 			this.StateHasChanged();
 
 			//var multiform = new MultipartFormDataContent();
 			//multiform.Add(new StreamContent(await file.OpenReadAsync(), fileInfo.Size), "files", fileInfo.Name);
 		}
+	}
+
+	private async Task<string> HandleKey()
+	{
+		byte[] keyByteArray = null;
+		Random rnd = new Random();
+		if (String.IsNullOrEmpty(EnteredKey))
+		{
+			Console.WriteLine("Algorithm:" + Algorithm);
+			if (Algorithm == "A52")
+			{
+				keyByteArray = new byte[8];
+				rnd.NextBytes(keyByteArray);
+			}
+			else if (Algorithm == "RC4")
+			{
+				keyByteArray = new byte[16];
+				rnd.NextBytes(keyByteArray);
+			}
+		}
+		else
+		{
+			keyByteArray = Encoding.ASCII.GetBytes(EnteredKey);
+		}
+
+		//else
+		//{
+		//	if (Algorithm == "A5/2" && EnteredKey<8)
+		//	{
+		//		keyByteArray = new byte[8 - EnteredKey.Length];
+		//		rnd.NextBytes(keyByteArray);
+		//		byte[] keyBytes = Encoding.ASCII.GetBytes(EnteredKey);
+		//	}
+		//	else if (Algorithm == "RC4" && EnteredKey<16)
+		//	{
+		//		keyByteArray = new byte[16 - EnteredKey.Length];
+		//		rnd.NextBytes(keyByteArray);
+		//	}
+		//}
+
+		return Convert.ToBase64String(keyByteArray);
 	}
 }
