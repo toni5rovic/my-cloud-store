@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using MyCloudStore.Service.DataLayer;
 using MyCloudStore.Service.DataLayer.Models;
 using MyCloudStore.Shared.Requests;
+using MyCloudStore.Shared.Responses;
 using File = MyCloudStore.Service.DataLayer.Models.File;
 using FileResult = MyCloudStore.Shared.Responses.FileResult;
 
@@ -118,6 +119,47 @@ namespace MyCloudStore.Service.Controllers
 			};
 
 			return fileResult;
+		}
+
+		// GET: api/Files/storageSpace
+		[HttpGet]
+		[Route("storageSpace")]
+		public async Task<ActionResult<StorageSpace>> StorageSpace()
+		{
+			var claims = HttpContext.User.Claims;
+			var email = claims.Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value;
+			var user = (await context.AppUsers.Include(u => u.Files)
+				.FirstOrDefaultAsync(u => u.Email == email));
+
+			//////////////////////
+			// TODO: cuva se FilePath u bazi, koristi to!
+			string clientFilesFolder = configuration.GetValue<string>("ClientFilesFolderPath");
+
+			string userFolderPath = Path.Combine(clientFilesFolder, user.Id.ToString());
+			if (!Directory.Exists(userFolderPath))
+			{
+				return NotFound();
+			}
+
+			var files = user.Files.ToList();
+
+			long sumBytes = 0;
+			foreach(var file in files)
+			{
+				string filePath = Path.Combine(userFolderPath, file.Id.ToString());
+				long length = new System.IO.FileInfo(filePath).Length;
+				sumBytes += length;
+			}
+
+			double sumKBs = sumBytes / 1024.0;
+
+			StorageSpace storageSpace = new StorageSpace
+			{
+				MaxKBs = user.MaxKBs,
+				CurrentKBs = sumKBs
+			};
+
+			return storageSpace;
 		}
 
 		// PUT: api/Files/5
