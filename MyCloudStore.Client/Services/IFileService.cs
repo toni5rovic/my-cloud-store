@@ -18,5 +18,8 @@ namespace MyCloudStore.Client.Services
 
 		Task<string> GetAlgorithm(Guid fileId);
 		Task<string> GetKey(Guid fileId);
+
+		Task<byte[]> EncryptConfigFile(Stream fs, string fileName, string password);
+		Task<byte[]> DecryptConfigFile(Stream fs, string fileName, string password);
 	}
 }

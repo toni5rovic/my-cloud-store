@@ -17,7 +17,7 @@
 	</div>
 	<div class=" col-6 p-0 mb-2 ml-2 mt-2">
 		<div class="progress">
-			<div class="progress-bar progress-bar-striped bg-success" style="width: 25%" role="progressbar" aria-valuenow=@value.ToString() aria-valuemin="0" aria-valuemax=@max.ToString()></div>
+			<div class="progress-bar progress-bar-striped bg-success" role="progressbar" aria-valuenow=@value.ToString() aria-valuemin="0" aria-valuemax=@max.ToString()>@progressValuePercent</div>
 		</div>
 	</div>
 	@*<progress max="@storageSpace.MaxKBs" value="@storageSpace.CurrentKBs" />*@
@@ -36,6 +36,10 @@
 @if (files == null)
 {
 	<p><em>Loading file list...</em></p>
+}
+else if (files.Count() == 0)
+{
+	<p><em>There are no files.</em></p>
 }
 else
 {
@@ -94,7 +98,20 @@ else
 		// TODO
 		// get algorithm and key
 		string algorithm = await fileService.GetAlgorithm(fileId);
+		if (algorithm == null)
+		{
+			ErrorMessage = "Please upload the configuration file";
+			this.StateHasChanged();
+			return;
+		}
+
 		string key = await fileService.GetKey(fileId);
+		if (key == null)
+		{
+			ErrorMessage = "Please upload the configuration file";
+			this.StateHasChanged();
+			return;
+		}
 
 		FileResult file = await fileService.GetFileAsync(fileId, algorithm, key);
 
@@ -125,6 +142,8 @@ else
 	protected async Task Load()
 	{
 		files = await fileService.GetFilesAsync();
+		if (files == null)
+			files = new List<FileResult>();
 		storageSpace = await fileService.GetStorageSpace();
 		max = (int)storageSpace.MaxKBs;
 		value = (int)storageSpace.CurrentKBs;

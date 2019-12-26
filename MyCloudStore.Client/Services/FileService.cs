@@ -14,6 +14,7 @@ using Microsoft.JSInterop;
 using MyCloudStore.CryptoLibrary.Hash;
 using Newtonsoft.Json;
 using MyCloudStore.CryptoLibrary.Algorithms;
+using System.Security.Cryptography;
 
 namespace MyCloudStore.Client.Services
 {
@@ -161,8 +162,12 @@ namespace MyCloudStore.Client.Services
 		public async Task<string> GetAlgorithm(Guid fileId)
 		{
 			var listOfFiles = await localStorage.GetItemAsync<List<ConfigFileEntry>>("files");
+			if (listOfFiles == null)
+				return null;
+
 			var file = listOfFiles.Where(f => f.Id == fileId.ToString())
 				.FirstOrDefault();
+			
 			if (file == null)
 				return null;
 
@@ -172,8 +177,12 @@ namespace MyCloudStore.Client.Services
 		public async Task<string> GetKey(Guid fileId)
 		{
 			var listOfFiles = await localStorage.GetItemAsync<List<ConfigFileEntry>>("files");
+			if (listOfFiles == null)
+				return null;
+
 			var file = listOfFiles.Where(f => f.Id == fileId.ToString())
 				.FirstOrDefault();
+
 			if (file == null)
 				return null;
 
@@ -186,6 +195,78 @@ namespace MyCloudStore.Client.Services
 			listOfFiles.Add(fileEntry);
 			await localStorage.SetItemAsync("files", listOfFiles);
 		}
+
+		public async Task<byte[]> EncryptConfigFile(Stream fs, string fileName, string password)
+		{
+			byte[] fileContent = null;
+			using (var memoryStream = new MemoryStream())
+			{
+				await fs.CopyToAsync(memoryStream);
+				fileContent = memoryStream.ToArray();
+			}
+
+			string plaintext = Encoding.ASCII.GetString(fileContent);
+			byte[] encrypted;
+			using (var AES = new AesCryptoServiceProvider())
+			{
+				AES.IV = FileUtil.GetIV(fileName);
+				AES.Key = FileUtil.GetKey(password, 32);
+
+				ICryptoTransform encryptor = AES.CreateEncryptor(AES.Key, AES.IV);
+				
+				using (MemoryStream msEncrypt = new MemoryStream())
+				{
+					using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+					{
+						using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+						{
+							//Write all data to the stream.
+							swEncrypt.Write(plaintext);
+						}
+						encrypted = msEncrypt.ToArray();
+					}
+				}
+			}
+
+			return encrypted;
+		}
+
+		public async Task<byte[]> DecryptConfigFile(Stream fs, string fileName, string password)
+		{
+			string plaintext = null;
+			byte[] fileContent = null;
+			using (var memoryStream = new MemoryStream())
+			{
+				//fs.CopyTo(memoryStream);
+				await fs.CopyToAsync(memoryStream);
+				fileContent = memoryStream.ToArray();
+			}
+
+			using (var AES = new AesCryptoServiceProvider())
+			{
+				AES.IV = FileUtil.GetIV(fileName);
+				AES.Key = FileUtil.GetKey(password, 32);
+
+				ICryptoTransform decryptor = AES.CreateDecryptor(AES.Key, AES.IV);
+
+				// Create the streams used for decryption.
+				using (MemoryStream msDecrypt = new MemoryStream(fileContent))
+				{
+					using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+					{
+						using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+						{
+
+							// Read the decrypted bytes from the decrypting stream
+							// and place them in a string.
+							plaintext = srDecrypt.ReadToEnd();
+						}
+					}
+				}
+			}
+
+			return Encoding.ASCII.GetBytes(plaintext);
+		}
 	}
 
 	public static class FileUtil
@@ -196,6 +277,63 @@ namespace MyCloudStore.Client.Services
 				"saveAsFile",
 				filename,
 				Convert.ToBase64String(data));
+		}
+
+		public static byte[] GetKey(string password, int length)
+		{
+			int keySize = length;
+			if (password.Length == keySize)
+			{
+				Console.WriteLine("Password: " + password);
+				return Encoding.ASCII.GetBytes(password);
+			}
+
+			if (password.Length > keySize)
+			{
+				password = password.Substring(0, keySize);
+				Console.WriteLine("Password: " + password);
+				return Encoding.ASCII.GetBytes(password);
+			}
+
+			// fileName < keySize
+			string originalFileName = password;
+			int i = 0;
+			while (password.Length != keySize)
+			{
+				password = password + password[i];
+				i++;
+			}
+
+			Console.WriteLine("Password: " + password);
+			return Encoding.ASCII.GetBytes(password);
+		}
+
+		public static byte[] GetIV(string fileName)
+		{
+			if (fileName.Length == 16)
+			{
+				Console.WriteLine("IV: " + fileName);
+				return Encoding.ASCII.GetBytes(fileName);
+			}
+
+			if (fileName.Length > 16)
+			{
+				fileName = fileName.Substring(0, 16);
+				Console.WriteLine("IV: " + fileName);
+				return Encoding.ASCII.GetBytes(fileName);
+			}
+
+			// fileName < 16
+			string originalFileName = fileName;
+			int i = 0;
+			while (fileName.Length != 16)
+			{
+				fileName = fileName + fileName[i];
+				i++;
+			}
+
+			Console.WriteLine("IV: " + fileName);
+			return Encoding.ASCII.GetBytes(fileName);
 		}
 	}
 

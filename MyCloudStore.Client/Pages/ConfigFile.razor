@@ -4,33 +4,57 @@
 @inject IFileService  fileService;
 @inject IJSRuntime js;
 @using  System.Text;
+@using  System.IO;
 <h4>Upload your configuration file</h4>
 
-@if (!String.IsNullOrEmpty(ErrorMessage))
-{
-	<div class="alert alert-danger" role="alert">
-		<strong>@ErrorMessage</strong>
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-			<span aria-hidden="true">&times;</span>
-		</button>
+<div class="container row">
+	@if (!String.IsNullOrEmpty(ErrorMessage))
+	{
+		<div class=" col-12">
+			<div class="alert alert-danger" role="alert">
+				<strong>@ErrorMessage</strong>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		</div>
+	}
+	<div class="col-md-6 col-sm-12">
+		<input type="file" @ref=inputTypeFileElement />
+		<div class="mt-2 mb-2">
+			<button @onclick=ReadFile class="btn btn-primary">Read file</button>
+		</div>
+
+		<h4>Download configuration file</h4>
+		<div class="mt-2">
+			<button @onclick=DownloadFile class="btn btn-primary">Download config file</button>
+		</div>
+
+		<div class="form-group mb-2">
+			<label>Enter the password for configuration file: </label>
+			<input type="text" id="passwordInput" class="form-control" name="password" @bind=Password />
+		</div>
 	</div>
-}
-
-<input type="file" @ref=inputTypeFileElement />
-<div class="mt-2 mb-2">
-	<button @onclick=ReadFile class="btn btn-primary">Read file</button>
-</div>
-
-<h4>Download configuration file</h4>
-<div class="mt-2">
-	<button @onclick=DownloadFile class="btn btn-primary">Download config file</button>
 </div>
 @code {
 	ElementReference inputTypeFileElement;
 	string ErrorMessage { get; set; }
+	string Password { get; set; }
 
 	public async Task ReadFile()
 	{
+		if (String.IsNullOrEmpty(Password))
+		{
+			ErrorMessage = "Please enter the password";
+			this.StateHasChanged();
+			return;
+		}
+		else
+		{
+			ErrorMessage = "";
+			this.StateHasChanged();
+		}
+
 		var nl = Environment.NewLine;
 		var files = (await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync()).ToList();
 
@@ -40,7 +64,10 @@
 
 			using (var fs = await file.OpenReadAsync())
 			{
-				await fileService.UploadConfigFileAsync(fs, fileInfo.Name);
+				// TODO: decrypt first, then upload
+				byte[] plaintext = await fileService.DecryptConfigFile(fs, fileInfo.Name, Password);
+				Stream stream = new MemoryStream(plaintext);
+				await fileService.UploadConfigFileAsync(stream, fileInfo.Name);
 			}
 		}
 	}
@@ -54,10 +81,13 @@
 			this.StateHasChanged();
 		}
 
+		string fileName = "MyCloudStore-Config.json";
+
 		byte[] fileContent = Encoding.ASCII.GetBytes(jsonFileEntries);
-
+		Stream stream = new MemoryStream(fileContent);
 		// TODO: encrypt config file
+		byte[] encrypted = await fileService.EncryptConfigFile(stream, fileName, Password);
 
-		await FileUtil.SaveAs(js, "MyCloudStore-Config.json", fileContent);
+		await FileUtil.SaveAs(js, fileName, encrypted);
 	}
 }
