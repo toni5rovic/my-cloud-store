@@ -34,10 +34,19 @@
 		<progress max="@max" value="@value" />
 
 		@*<div class="mt-2">
-			<textarea style="max-width: 100%;" cols="50" rows="20">@Output</textarea>
-		</div>*@
+				<textarea style="max-width: 100%;" cols="50" rows="20">@Output</textarea>
+			</div>*@
 	</div>
 </div>
+@if (!String.IsNullOrEmpty(Message))
+{
+	<div class="alert alert-info" role="alert">
+		<strong>@Message</strong>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+}
 @code {
 
 	[Parameter]
@@ -47,6 +56,7 @@
 	public string EnteredKey { get; set; }
 	public string Output { get; set; }
 	public string Algorithm { get; set; } = "A52";
+	public string Message { get; set; }
 	ElementReference inputTypeFileElement;
 
 	public async Task ClearFile()
@@ -69,13 +79,6 @@
 		foreach (var file in files)
 		{
 			var fileInfo = await file.ReadFileInfoAsync();
-			Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Name)}: {fileInfo.Name}{nl}";
-			Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Size)}: {fileInfo.Size}{nl}";
-			Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Type)}: {fileInfo.Type}{nl}";
-			Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.LastModifiedDate)}: {fileInfo.LastModifiedDate?.ToString() ?? "(N/A)"}{nl}";
-			Output += $"Reading file...";
-			this.StateHasChanged();
-			Console.WriteLine(Output);
 			using (var fs = await file.OpenReadAsync())
 			{
 				var buffer = new byte[BufferSize];
@@ -102,7 +105,16 @@
 				//var buffer = new byte[fs.Length];
 				//await fs.ReadAsync(buffer, 0, (int)fs.Length);
 				var key = await HandleKey();
-				await fileService.UploadFileAsync(fs, fileInfo.Name, Algorithm, key);
+				var result = await fileService.UploadFileAsync(fs, fileInfo.Name, Algorithm, key);
+				if (result == false)
+				{
+					Message = "Upload of the file did not succeed.";
+				}
+				else
+				{
+					Message = "Upoload of the file suceeded!";
+				}
+
 			}
 			this.StateHasChanged();
 

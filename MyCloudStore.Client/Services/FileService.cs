@@ -30,7 +30,7 @@ namespace MyCloudStore.Client.Services
 			this.httpClient = httpClient;
 		}
 
-		public async Task UploadFileAsync(Stream fs, string fileName, string algorithm, string key)
+		public async Task<bool> UploadFileAsync(Stream fs, string fileName, string algorithm, string key)
 		{
 			string fileId = null;
 			using (var form = new MultipartFormDataContent())
@@ -66,7 +66,7 @@ namespace MyCloudStore.Client.Services
 			}
 
 			if (String.IsNullOrEmpty(fileId))
-				return;
+				return false;
 
 			// add to localstorage
 			ConfigFileEntry fileEntry = new ConfigFileEntry
@@ -78,6 +78,7 @@ namespace MyCloudStore.Client.Services
 			};
 
 			await AddToLocalStorage(fileEntry);
+			return true;
 		}
 
 		public async Task UploadConfigFileAsync(Stream stream, string fileName)
