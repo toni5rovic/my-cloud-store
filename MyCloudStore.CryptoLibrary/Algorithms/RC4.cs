@@ -9,11 +9,18 @@ namespace MyCloudStore.CryptoLibrary.Algorithms
 		private int[] S_vector;
 		private byte[] key;
 		private byte[] plaintext;
-		public RC4(byte[] key, byte[] plaintext)
+
+		private int keyLength = 128;
+		private int counterLength = 256;
+		private int outputLength = 256;
+
+		public int KeyLength { get { return keyLength; } }
+		public int CounterLength { get { return counterLength; } }
+		public int OutputLength { get { return outputLength; } }
+
+		public RC4()
 		{
 			S_vector = new int[256];
-			this.key = key;
-			this.plaintext = plaintext;
 		}
 
 		private void KeySchedulingAlgorithm()

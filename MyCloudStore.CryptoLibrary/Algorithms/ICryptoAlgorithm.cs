@@ -8,5 +8,9 @@ namespace MyCloudStore.CryptoLibrary.Algorithms
 	{
 		byte[] Encrypt(byte[] key, byte[] counter);
 		byte[] Decrypt(byte[] key, byte[] counter);
+
+		int KeyLength { get; }
+		int CounterLength { get; }
+		int OutputLength { get; }
 	}
 }

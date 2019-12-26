@@ -27,6 +27,14 @@ namespace MyCloudStore.CryptoLibrary.Algorithms
 		private int[] MaskR3 = { 7, 20, 21, 22 };
 		private int[] MaskR4 = { 11, 16 };
 
+		private int keyLength = 64;
+		private int counterLength = 22;
+		private int outputLength = 128;
+
+		public int KeyLength { get { return keyLength; } }
+		public int CounterLength { get { return counterLength; } }
+		public int OutputLength { get { return outputLength; } }
+
 		public A52()
 		{
 			R1 = new BitArray(19, false);
@@ -147,15 +155,17 @@ namespace MyCloudStore.CryptoLibrary.Algorithms
 			return majorityBit_R1 ^ majorityBit_R2 ^ majorityBit_R3 ^ MSB_R1 ^ MSB_R2 ^ MSB_R3;
 		}
 
-		public byte[] Decrypt(byte[] key, byte[] counter)
+		public byte[] Decrypt(byte[] key, byte[] IV)
 		{
-			return Encrypt(key, counter);
+			return Encrypt(key, IV);
 		}
 
-		public byte[] Encrypt(byte[] key, byte[] counter)
+		public byte[] Encrypt(byte[] key, byte[] IV)
 		{
 			this.Kc = new BitArray(key);
-			this.IV = new BitArray(counter);
+			this.IV = new BitArray(IV);
+			// TODO: move this to CTR encryptor -> this is not A5/2 stuff
+			// A5/2 should receive IV (counter) as is, not to generate nonce or whatever
 			bool[] nonce = new bool[] { true, true, false, true, false, true };
 			this.IV = Prepend(this.IV, new BitArray(nonce));
 
